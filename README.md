@@ -1,4 +1,4 @@
-# Lab-rotation in 
+# Lab-rotation in Computational biomedicine - Denis Schapiro group
 Figuring out how to use GitHub and start my lab rotation repository
 
 I joined the group on February 1. 2022. and my rotation was at first said to be 2 months long.
@@ -26,7 +26,11 @@ Below are layered segmentations where it can be seen that out-of-the-box Mesmer 
 ![first_image_layered_segmentations](https://user-images.githubusercontent.com/86408271/159475383-b5aebe36-5e30-4171-991f-066d09db5cbc.jpg)
 
 Then we received a higher-resolution image on which we decided to perform spot counting. Unfortunately it turned out that whole-cell segmentation was not possible with this configuration of markers as there was a lack of a membrane marker. 
-An idea I had regarding myofibroblast whole-cell segmentation was to use their autofluorescence to detect their cytoplasm. I tried out---
+An idea I had regarding myofibroblast whole-cell segmentation was to use their autofluorescence to detect their cytoplasm. I decided to use the autofluorescence in the green channel as opposed to the autofluorescence in the DAPI channel beacuse I wouldn't have the nuclear signal from different cell types as on the image slide, only myofibroblasts autofluoresce. The biggest problem by far was the lack of uniform signal in the green channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however we decided it wouldn't be a good use of time and turned the analysis in a different direction.
+
+My next goal was to perform spot counting in QuPath while Florian would do it in Fiji. Before that I installed QuPath, CellProfiler and Napari and took a day getting to know how they work and what they should be used for.
+In QuPath, because whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. LINK_____ . In short, I ran ____insert functions___ as a result, I had the each "spot group" annotated separately which could be quantified and located on the original image. Big shortcomings of this method were the fact that thresholding was done manually, there were regions of high intensity with more spots which would only be counted as one, and of course, not all spots would be captured by the threshold.
+In comparison, Florian's approach with a Fiji plugin called RS-FISH performed much better because the method used there is based on gradients a spot would form to calculate spot location.
 
 
 
