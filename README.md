@@ -55,6 +55,7 @@ Palom - works great, _CODE to get it working on the first image_
 
 It would be great if I could have some comparison between the three approaches to registration.
 
+Even though it is a very basic concept, I've never encountered the PATH before so I learnt how to and why it might be useful to add certain tools to the PATH. For example, I installed bftools to be able to convert images from the command line so instead of running the command from its filepath each time, I added it to the PATH.
 
 Running MCMICRO on the registered images from Palom - good segmentation with Mesmer (example), but error in quantification - markers.csv not matching channels - I still need to look into it
 Trying to do QC in Python - array too bign error
