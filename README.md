@@ -32,6 +32,37 @@ My next goal was to perform spot counting in QuPath while Florian would do it in
 In QuPath, because whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. LINK_____ . In short, I ran ____insert functions___ as a result, I had the each "spot group" annotated separately which could be quantified and located on the original image. Big shortcomings of this method were the fact that thresholding was done manually, there were regions of high intensity with more spots which would only be counted as one, and of course, not all spots would be captured by the threshold.
 In comparison, Florian's approach with a Fiji plugin called RS-FISH performed much better because the method used there is based on gradients a spot would form to calculate spot location.
 
+Compare RS-FISH to my QuPath pixel thresholding approach with images and measurements.
+
+
+
+CYCIF - everything in detail
+
+how does cycif work
+how the data looked
+What I tried out
+what worked
+what didn't work
+
+ImageJ macro
+StackRegJ and TurboReg plugins
+Stitching plugin
+
+Ashlar - preprocessing the data with Fiji to be able to feed it to Ashlar
+
+Palom - works great, _CODE to get it working on the first image_
+-modified function so that it runs on multiple channels
+
+It would be great if I could have some comparison between the three approaches to registration.
+
+
+Running MCMICRO on the registered images from Palom - good segmentation with Mesmer (example), but error in quantification - markers.csv not matching channels - I still need to look into it
+Trying to do QC in Python - array too bign error
+
+
+
+New data from Johanna - she could get the tiles out without stitching - test it out in MCMICRO
+Setting up my account on the cluster
 
 
 
