@@ -63,12 +63,26 @@ Trying to do QC in Python - array too bign error
 
 
 
-New data from Johanna - she could get the tiles out without stitching - test it out in MCMICRO
+
 Setting up my account on the cluster
 
 
 
+New data from Johanna - she could get the tiles out without stitching - test it out in MCMICRO
+The new data we received related to the CycIF project has the tiles exported without being prestitched. There are 6 cycles with 5 channels per cycle and 6 tiles per cycle all as separate .tif files, meaning in total there are 30 .tif files per cycle. Running it in MCMICRO with the command below gives the following error. Currently I'm unsure how the input data should look like for BaSiC, or which options exactly to change for Ashlar, but currently it is not working.
 
-
-
+```
+nextflow run labsyspharm/mcmicro \
+--in 220325_CyCIF_Tonsil_TileExport \
+--sample-name extracted_tiles_stacked  \
+--probability-maps unmicst, s3seg \
+--unmicst-opts '--channel 1 --scalingFactor 0.5' \
+--ashlar-opts '' \
+--start-at illumination \
+--stop-at quantification
+```
+```
+ERROR: Wrong number of flat-field profiles. Must be 1, or 181 (number of input files)
+```
+I did manage to run Ashlar from a Docker container on the tiles and produce a well-registered image.
 
