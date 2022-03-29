@@ -84,5 +84,44 @@ nextflow run labsyspharm/mcmicro \
 ```
 ERROR: Wrong number of flat-field profiles. Must be 1, or 181 (number of input files)
 ```
-I did manage to run Ashlar from a Docker container on the tiles and produce a well-registered image.
+I did manage to run Ashlar from a Docker container on the tiles and produce a well-registered image. 
+
+I discussed with the developers of MCMICRO about the option of running the single `.tif` files I have with the MCMICRO pipeline, however, there is no such option currently, as it would require metadata within the `.ome.tiff` file for tile localization and stitching. They suggested I run the images through BaSiC for illumination correction and ASHLAR for registration and stitching outside of MCMICRO so that is what I did.
+BaSiC is a module used by MCMICRO for illumination correction, the first step of the pipeline. I was able to run my data through BaSiC with the following command:
+```
+docker run -it \
+-v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/renamed_tiles':/data \
+-v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/illumination':/output \
+labsyspharm/basic-illumination \
+ImageJ-linux64 --ij2 \
+--headless \
+--run imagej_basic_ashlar_filepattern.py \
+"pattern='/data/cycle_{series}_tile_{tile}_channel_{channel}.tif',output_dir='/output',experiment_name='CycIF_tonsil'"
+```
+with the command `-v` I mount the input folder with the renamed tiles in a `cycle_{ii}_channel_{jj}_tile_{kk}.tif` format, and the output folder. Within the container, I use ImageJ-linux64 to run the python script which can handle this data format, and give it the pattern. The resulting ffp and dfp `.tif` files are saved in my `illumination` folder.
+Then I pass the images and ffp and dfp `.tif` files to ASHLAR for registration and stitching with the following command:
+```
+docker run \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/renamed_tiles":/input \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/illumination":/illumination \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/tonsil/registered":/output \
+-it labsyspharm/ashlar:1.14.0 ashlar \
+-o /output \
+--align-channel 0 \
+"fileseries|/input|pattern=cycle_01_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+"fileseries|/input|pattern=cycle_02_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+"fileseries|/input|pattern=cycle_03_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+"fileseries|/input|pattern=cycle_04_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+"fileseries|/input|pattern=cycle_05_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+"fileseries|/input|pattern=cycle_06_tile_{series:2}_channel_{channel:1}.tif|width=3|height=2|overlap=0.4|pixel_size=0.65|layout=snake" \
+--ffp '/illumination/CycIF_tonsil-ffp.tif' \
+--dfp '/illumination/CycIF_tonsil-dfp.tif' \
+--filter-sigma 0 \
+--maximum-shift 500 \
+--tile-size 512 \
+--pyramid \
+-f cycif-corrected_whole_0_65.ome.tif
+```
+The command mounts the `renamed_tiles` folder as input, `illumination` as illumination and `registered` folder as output. I use the Hoechst channel for alignment. I did try out the alignment with different channels, and all but channel 1 were comparable, with channel 1 being the least reliable. With the currently undocumented function `fileseries` I was able to match the pattern for each channel, set the width (number of tiles in x axis) and height (number of tiles in y axis), the overlap which I had to estimate myself, set the pixel size and layout. the `--ffp` and `--dfp` parameters are given their appropriate illumination correction file from BaSiC. The `--pyramid` option tells ASHLAR to produce a pyramidal tiff as a result.
+
 
