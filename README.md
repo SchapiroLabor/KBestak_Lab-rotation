@@ -1,7 +1,6 @@
-# Lab-rotation in Computational biomedicine - Denis Schapiro group
-Figuring out how to use GitHub and start my lab rotation repository
+# Lab-rotation in Computational biomedicine - image analysis with a focus on stitching and registration
 
-I joined the group on February 1. 2022. and my rotation was at first said to be 2 months long.
+I joined the group on February 1. 2022. and my rotation lasted until Arpil 14. 2022.
 
 When I started out, I had to get acquainted and do some catch up on ongoing projects. My first main challenge was setting up Nextflow and MCMICRO to work on my Windows machine. I managed to have Nextflow running on my computer by following the very detailed instructions from https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html. Going along with the instructions and recommendations from my supervisor, Florian, I decided that I would use VS Code as my main code editor for scripting in Python and interacting with terminals. 
 With Nextflow running, running MCMICRO was easy since the instructions on their webpage are clear https://mcmicro.org/documentation/running-mcmicro.html.
