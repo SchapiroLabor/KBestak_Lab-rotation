@@ -126,3 +126,47 @@ The command mounts the `renamed_tiles` folder as input, `illumination` as illumi
 load imagej macros and py files
 
 
+Illumination correction on the pre-stitched images.
+BaSiC command
+```
+docker run -it \
+-v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/raw':/data \
+-v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/illumination':/output \
+labsyspharm/basic-illumination \
+ImageJ-linux64 --ij2 \
+--headless \
+--run imagej_basic_ashlar_filepattern.py \
+"pattern='/data/cycle_{i}_tile_{tile}_channel_{channel}.tif',output_dir='/output',experiment_name='Cycif_prestitched'"
+```
+
+ASHLAR command
+```
+docker run \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/raw":/input \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/illumination":/illumination \
+-v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/registered":/output \
+-it labsyspharm/ashlar:1.14.0 ashlar \
+-o /output \
+--align-channel 0 \
+"fileseries|/input|pattern=cycle_0_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
+"fileseries|/input|pattern=cycle_1_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
+--ffp '/illumination/Cycif_prestitched-ffp.tif' \
+--dfp '/illumination/Cycif_prestitched-dfp.tif' \
+--filter-sigma 0 \
+--maximum-shift 500 \
+--tile-size 512 \
+--pyramid \
+-f cycif_prestitched_corrected.ome.tif
+``
+I keep getting the following error when running ASHLAR on the prestitched images: 
+```
+ValueError: ('Contradictory paths found:', 'negative weights?')
+```
+As proof of concept, I've managed to run the first 2x2 tile area of the image with BaSiC and ASHLAR, however it looks like the result without illumination correction is better.
+
+![composite_registered_2x2](https://user-images.githubusercontent.com/86408271/161273850-1da19e80-7322-406a-ae6a-f7b7ba994e38.jpg)
+![composite_zoomed_2x2](https://user-images.g![cycif_prestitched_corrected_cycle1](https://user-images.githubusercontent.com/86408271/161273933-730efef7-ef12-4a2e-a756-5254f69a69ca.jpg)
+ithubusercontent.com/86408271/161273864-09d9266f-2d15-4e9e-8dff-58678f0fb8c6.jpg)
+![Uploading not_corrected_comparison_cycif_prestit![cycif_prestitched_corrected_cycle2](https://user-images.githubusercontent.com/86408271/161273976-01cef49b-25bc-40f2-98a6-8263ef4618f4.jpg)![not_corrected_comparison_2_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161273993-ecb64ffb-fc13-4311-9058-ed4882176e4c.jpg)
+
+ched_corrected_not.ome.jpg…]()
