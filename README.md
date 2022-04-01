@@ -163,10 +163,15 @@ I keep getting the following error when running ASHLAR on the prestitched images
 ValueError: ('Contradictory paths found:', 'negative weights?')
 ```
 As proof of concept, I've managed to run the first 2x2 tile area of the image with BaSiC and ASHLAR, however it looks like the result without illumination correction is better.
+![composite_registered_2x2](https://user-images.githubusercontent.com/86408271/161274302-388f2f65-168f-4325-98af-62bc2d71fd74.jpg)
 
-![composite_registered_2x2](https://user-images.githubusercontent.com/86408271/161273850-1da19e80-7322-406a-ae6a-f7b7ba994e38.jpg)
-![composite_zoomed_2x2](https://user-images.g![cycif_prestitched_corrected_cycle1](https://user-images.githubusercontent.com/86408271/161273933-730efef7-ef12-4a2e-a756-5254f69a69ca.jpg)
-ithubusercontent.com/86408271/161273864-09d9266f-2d15-4e9e-8dff-58678f0fb8c6.jpg)
-![Uploading not_corrected_comparison_cycif_prestit![cycif_prestitched_corrected_cycle2](https://user-images.githubusercontent.com/86408271/161273976-01cef49b-25bc-40f2-98a6-8263ef4618f4.jpg)![not_corrected_comparison_2_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161273993-ecb64ffb-fc13-4311-9058-ed4882176e4c.jpg)
+![composite_zoomed_2x2](https://user-images.githubusercontent.com/86408271/161274337-f27970eb-4d57-4ed9-8aae-c02dda0389e0.jpg)
 
-ched_corrected_not.ome.jpg…]()
+![not_corrected_comparison_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161274381-818eef3c-8508-4fea-aa90-b12e87290f72.jpg)
+![cycif_prestitched_corrected_cycle1](https://user-images.githubusercontent.com/86408271/161274405-cc59b161-8086-4af9-a739-4e15fca4c3a1.jpg)
+![not_corrected_comparison_2_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161274443-606dccf5-f951-477b-a2d6-06a1c6412247.jpg)
+
+
+![cycif_prestitched_corrected_cycle2](https://user-images.githubusercontent.com/86408271/161274457-0f150447-34a0-49cb-b482-fddbb8e31cad.jpg)
+
+
