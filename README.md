@@ -157,7 +157,7 @@ docker run \
 --tile-size 512 \
 --pyramid \
 -f cycif_prestitched_corrected.ome.tif
-``
+```
 I keep getting the following error when running ASHLAR on the prestitched images: 
 ```
 ValueError: ('Contradictory paths found:', 'negative weights?')
