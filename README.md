@@ -20,6 +20,7 @@ nextflow run labsyspharm/mcmicro \
 
 The raw images are that of myofibroblasts, however as can be seen below, the first image I tried to analyze had a low resolution, there were myofibroblasts without nuclei, but with markers, some were donut-shaped. All in all, difficult images to analyze.
 
+REMOVE THESE
 ![first_low_res_comprosite_whole](https://user-images.githubusercontent.com/86408271/159475017-b73015e9-2fdd-45f4-aa70-1da98550a7a2.jpg)
 Below are layered segmentations where it can be seen that out-of-the-box Mesmer (blue) segments the nuclei the best, and unadjusted Unmicst (red) and untrained Ilastik  (green) struggle a lot. 
 ![first_image_layered_segmentations](https://user-images.githubusercontent.com/86408271/159475383-b5aebe36-5e30-4171-991f-066d09db5cbc.jpg)
