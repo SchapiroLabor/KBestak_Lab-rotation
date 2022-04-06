@@ -1,6 +1,32 @@
-# Lab-rotation in Computational biomedicine - image analysis with a focus on stitching and registration
+# H1 Lab-rotation in Computational biomedicine - image analysis with a focus on stitching and registration
 
 I joined the group on February 1. 2022. and my rotation lasted until Arpil 14. 2022.
+
+## H2 Nextflow and MCMICRO setup on a Windows machine
+Detailed instructions: https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html
+VS Code was setup as my main code editor for scripting in Python and interacting with terminals.
+After Nextflow was successfully installed, running MCMICRO was easy from the clear instructions on the webpage: https://mcmicro.org/documentation/running-mcmicro.html
+Running MCMICRO on the 'exemplar-001' dataset is very useful for getting used to a command line interface and MCMICRO. It should be noted that the `.ome.tiff` files from the exemplar-001 dataset contain metadata about the layout of tiles which helps ASHLAR, the registration and stitching module, to stitch the tiles.
+
+
+## H2 Image segmentation with MCMICRO modules
+
+My first task was to use MCMICRO to segment nuclei in an image from a colaborator where I explored the command format and parameter tuning.
+The MCMICRO webpage contains details on parameter tuning: https://mcmicro.org/modules/
+Below is an example of a command which runs MCMICRO on the image within the `raw` folder which is inside the folder `Example_image_1`. It should be noted that the current directory when running the command needs to be one level above `Example_image_1`, otherwise the path should be specified.
+It calculates the probability maps with UnMICST and Ilastik which are followed by watershed segmentation with S3segmentor. Another module applied is Mesmer, a deep-learning-enabled segmentation algorithm which can segment the nuclei and cells itself, if provided the right markers. The channel for segmentation is set to 0, the DAPI channel because the main goal was to segment the nuclei.
+```
+nextflow run labsyspharm/mcmicro \
+--in Example_image_1 \
+--sample-name 40XCaptured_4  \
+--probability-maps unmicst,mesmer,ilastik \
+--channel 0 \
+--start-at registration \
+--stop-at quantification
+```
+
+
+
 
 When I started out, I had to get acquainted and do some catch up on ongoing projects. My first main challenge was setting up Nextflow and MCMICRO to work on my Windows machine. I managed to have Nextflow running on my computer by following the very detailed instructions from https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html. Going along with the instructions and recommendations from my supervisor, Florian, I decided that I would use VS Code as my main code editor for scripting in Python and interacting with terminals. 
 With Nextflow running, running MCMICRO was easy since the instructions on their webpage are clear https://mcmicro.org/documentation/running-mcmicro.html.
