@@ -12,12 +12,12 @@ Running MCMICRO on the 'exemplar-001' dataset is very useful for getting used to
 
 My first task was to use MCMICRO to segment nuclei in an image of cardiomyocytes from a colaborator where I explored the command format and parameter tuning.
 The MCMICRO webpage contains details on parameter tuning: https://mcmicro.org/modules/
-Below is an example of a command which runs MCMICRO on the image within the `raw` folder which is inside the folder `Example_image_1`. It should be noted that the current directory when running the command needs to be one level above `Example_image_1`, otherwise the path should be specified.
+Below is an example of a command which runs MCMICRO on the image within the `raw` folder which is inside the folder `Example_image_1`. It should be noted that the current directory when running the command needs to be one level above `Example_image_1`, otherwise the path should be specified. The sample name is arbitrary and only affects the output file.
 It calculates the probability maps with UnMICST and Ilastik which are followed by watershed segmentation with S3segmentor. Another module applied is Mesmer, a deep-learning-enabled segmentation algorithm which can segment the nuclei and cells itself, if provided the right markers. The channel for segmentation is set to 0, the DAPI channel because the main goal was to segment the nuclei.
 ```
 nextflow run labsyspharm/mcmicro \
 --in Example_image_1 \
---sample-name 40XCaptured_4  \
+--sample-name 40XExample_1  \
 --probability-maps unmicst,mesmer,ilastik \
 --channel 0 \
 --start-at registration \
