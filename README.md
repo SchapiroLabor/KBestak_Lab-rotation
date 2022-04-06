@@ -31,9 +31,19 @@ We received a higher-resolution images, however, unfortunately whole-cell segmen
 The cytoplasm of cardiomyocytes shows autofluorescence in the DAPI and FITC channels which had previously been used for cell sorting (Larcher *et al*. 2018) and I had the idea to use their autofluorescence for whole-cell segmentation. The DAPI channel images also contained nuclei from fibroblasts which is why I decided to use the FITC channel for whole-cell segmentation. I decided to use the autofluorescence in the FITC channel as opposed to the autofluorescence in the DAPI channel beacuse I would not have the nuclear signal from different cell types as on the image slide because only cardiomyocytes show autofluorescence. The biggest problem by far was the lack of uniform signal in the FITC channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however, we decided it wouldn't be a good use of time and turned the analysis in a different direction.
 
 I performed the spot counting in QuPath. Since whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. For each channel, I ran the functions: `Classify -> Pixel classification -> Create thresholder` where I manually set the threshold based on the channel. As a result, all pixel groups above the threshold would be counted as one spot, and its coordinates and quantification could be extracted. Big shortcomings of this method were the fact that thresholding was done manually, and that there were regions of high intensity with more spots. These regions would only be counted as one spot even though they contained many, therefore not all the spots would be captured with the classification, and not all spots would be above the threshold.
-As a better approach, Florian has used the tool RS-FISH which calculates the probability of spot coordinates based on gradients the spot would form to calculate spot location. Another interesting approach to spot counting and annotation is deepBlink, [https://doi.org/10.1093/nar/gkab546]
-Compare RS-FISH to my QuPath pixel thresholding approach with images and measurements.
+As a better approach, Florian has used the tool RS-FISH which calculates the probability of spot coordinates based on gradients the spot would form to calculate spot location. https://github.com/PreibischLab/RS-FISH
+Another interesting approach to spot counting and annotation is deepBlink, a neural network-based method to detect and localize spots automatically. https://github.com/BBQuercus/deepBlink
 
+## Cyclic immunofluorescence project
+
+### CycIF introduction
+
+Cyclic Immunofluorescene (CycIF) is a method of obtaining highly multiplexed immunofluorescence images. It uses sequential 4- to 6-channel imaging followed by fluorophore inactivation or washing. Repeating cycles preserve the cell morphology and the resulting images can have up to 30 channels (Lin *et al*. 2016). The main goal of CycIF image analysis is to obtain the registered image across cycles so that single-cell analysis can be performed.
+
+The goal of this part of the rotation was to help our collaborator Johanna Wagner who is performing CycIF experiments with setup to be able to analyze her data with the MCMICRO pipeline.
+
+The first images we received were pre-stitched images with each channel of each cycle being in a separate `.tif` file. Due to at-the-time-told-so limitations of the machine, it was thought there was no way to export the individual tiles. Also no illumination correction was done on the pre-stitched tiles. 
+MCMICRO contains modules for different purposes in its pipeline. BaSiC is the illumination correction module which produces the `ffp` and `dfp` images (flat-field profile and dark field-profile, respectively). ASHLAR registers and stitches tiles and applies the illumination correction from BaSiC on the image to produce the whole image as a `.ome.tiff` file.
 
 
 CYCIF - everything in detail
@@ -179,3 +189,4 @@ As proof of concept, I've managed to run the first 2x2 tile area of the image wi
 
 References:
 Larcher, V., Kunderfranco, P., Vacchiano, M., Carullo, P., Erreni, M., Salamon, I., Colombo, F. S., Lugli, E., Mazzola, M., Anselmo, A., & Condorelli, G. (2018). An autofluorescence-based method for the isolation of highly purified ventricular cardiomyocytes. Cardiovascular research, 114(3), 409–416. https://doi.org/10.1093/cvr/cvx239
+Lin, J. R., Fallahi-Sichani, M., Chen, J. Y., & Sorger, P. K. (2016). Cyclic Immunofluorescence (CycIF), A Highly Multiplexed Method for Single-cell Imaging. Current protocols in chemical biology, 8(4), 251–264. https://doi.org/10.1002/cpch.14
