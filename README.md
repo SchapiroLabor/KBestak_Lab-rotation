@@ -47,11 +47,15 @@ MCMICRO contains modules for different purposes in its pipeline. BaSiC is the il
 
 ### ImageJ approach
 
-The initial approach to apply registration on the pre-stitched CycIF images was to use the ImageJ plugin StackRegJ. When running the StackRegJ plugin on my machine, I ran into memory issues which is why I decided to go with pseudotiling - to fragment the original image into tiles, register the individual tiles, and stitch them back together to obtain a registered complete image. The macro can be found ___connect____ but it requires manual input of filepaths.
+The initial approach to apply registration on the pre-stitched CycIF images was to use the ImageJ plugin StackRegJ. When running the StackRegJ plugin on my machine, I ran into memory issues which is why I decided to go with pseudotiling - to fragment the original image into tiles, register the individual tiles, and stitch them back together to obtain a registered complete image. [The macro can be found here](./Scripts/Registration_and_stitching_setup_initial.ijm), however it requires manual input of filepaths, desired pseudotile sizes and overlap size. Unfortunately, this approach by itself never worked completely as it could only register and stitch small parts of the whole image (by manual cropping beforehand) if the area covered did not contain any autofluorescing dirt which caused major problems for registration with StackRegJ.
+
+Below is a result of registering and stitching (this time with the `Pairwise Stitching` function from the Stitching plugin for ImageJ) showing the registered nuclear channel (red is first cycle, yellow is second cycle), and the Cy3 channel (green is first cycle, blue is second cycle) showing stitching artifacts from image acquisition and no stitching artifact introduced with this method. The contrast was lowest for the Cy3 channel which is why the artifacts are most visible there.
+
+![Nuclei](https://user-images.githubusercontent.com/86408271/162015991-5860e23b-1c81-4227-976c-ec905f3b7dc1.jpg)
+![Cy3](https://user-images.githubusercontent.com/86408271/162016016-76843c9e-92f6-4d48-b1c8-95dc57fe8c26.jpg)
 
 
-ImageJ macro
-StackRegJ and TurboReg plugins
+
 Stitching plugin
 
 Ashlar - preprocessing the data with Fiji to be able to feed it to Ashlar
