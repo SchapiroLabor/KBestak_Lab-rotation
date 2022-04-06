@@ -1,6 +1,6 @@
 # Lab-rotation in Computational biomedicine - image analysis with a focus on stitching and registration
 
-I joined the group on February 1. 2022. and my rotation lasted until Arpil 14. 2022.
+I joined the group as a part of a mandatory student internship within the Working in Biosciences course as part of my Molecular Biosciences master with the major in Systems biology on February 1. 2022. and my rotation lasted until April 14. 2022.
 
 ## Nextflow and MCMICRO setup on a Windows machine
 Detailed instructions: https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html
@@ -8,10 +8,9 @@ VS Code was setup as my main code editor for scripting in Python and interacting
 After Nextflow was successfully installed, running MCMICRO was easy from the clear instructions on the webpage: https://mcmicro.org/documentation/running-mcmicro.html
 Running MCMICRO on the 'exemplar-001' dataset is very useful for getting used to a command line interface and MCMICRO. It should be noted that the `.ome.tiff` files from the exemplar-001 dataset contain metadata about the layout of tiles which helps ASHLAR, the registration and stitching module, to stitch the tiles.
 
-
 ## Image segmentation with MCMICRO modules
 
-My first task was to use MCMICRO to segment nuclei in an image from a colaborator where I explored the command format and parameter tuning.
+My first task was to use MCMICRO to segment nuclei in an image of cardiomyocytes from a colaborator where I explored the command format and parameter tuning.
 The MCMICRO webpage contains details on parameter tuning: https://mcmicro.org/modules/
 Below is an example of a command which runs MCMICRO on the image within the `raw` folder which is inside the folder `Example_image_1`. It should be noted that the current directory when running the command needs to be one level above `Example_image_1`, otherwise the path should be specified.
 It calculates the probability maps with UnMICST and Ilastik which are followed by watershed segmentation with S3segmentor. Another module applied is Mesmer, a deep-learning-enabled segmentation algorithm which can segment the nuclei and cells itself, if provided the right markers. The channel for segmentation is set to 0, the DAPI channel because the main goal was to segment the nuclei.
@@ -24,40 +23,15 @@ nextflow run labsyspharm/mcmicro \
 --start-at registration \
 --stop-at quantification
 ```
+It should be taken into account that the previous command runs the segmentation modules 'out-of-the-box' without further adjustments. Only Mesmer performs nearly perfectly 'out-of-the-box' whereas for UnMICST and Ilastik, additional parameters or training would be necessary.
 
+## Whole-cell segmentation based on cytoplasmic autofluorescence and spot counting with QuPath
 
+We received a higher-resolution images, however, unfortunately whole-cell segmentation was not possible on the images due to a lack of a membrane marker so we decided to perform spot counting.
+The cytoplasm of cardiomyocytes shows autofluorescence in the DAPI and FITC channels which had previously been used for cell sorting (Larcher *et al*. 2018) and I had the idea to use their autofluorescence for whole-cell segmentation. The DAPI channel images also contained nuclei from fibroblasts which is why I decided to use the FITC channel for whole-cell segmentation. I decided to use the autofluorescence in the FITC channel as opposed to the autofluorescence in the DAPI channel beacuse I would not have the nuclear signal from different cell types as on the image slide because only cardiomyocytes show autofluorescence. The biggest problem by far was the lack of uniform signal in the FITC channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however, we decided it wouldn't be a good use of time and turned the analysis in a different direction.
 
-
-When I started out, I had to get acquainted and do some catch up on ongoing projects. My first main challenge was setting up Nextflow and MCMICRO to work on my Windows machine. I managed to have Nextflow running on my computer by following the very detailed instructions from https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html. Going along with the instructions and recommendations from my supervisor, Florian, I decided that I would use VS Code as my main code editor for scripting in Python and interacting with terminals. 
-With Nextflow running, running MCMICRO was easy since the instructions on their webpage are clear https://mcmicro.org/documentation/running-mcmicro.html.
-It took some time getting used to command line interfaces, but running the MCMICRO on the examplar dataset exemplar-001 cleared things up, such as how to change options and parameter tuning.
-
-After getting to know the basics of using MCMICRO, the next step would be to apply it on actual data. The first step was to segment an image from a colaborator (Christoph).
-An example of a command running MCMICRO on the image withing the "raw" folder inside the folder "First_image_christoph" performing probability maps Unmicst and Ilastik, followed by a watershed segmentation with S3segmentor, or Mesmer to predict nuclei and segment them on the DAPI channel (0).
-```
-nextflow run labsyspharm/mcmicro \
---in First_image_christoph \
---sample-name 40XCaptured_4  \
---probability-maps unmicst,mesmer,ilastik \
---channel 0 \
---start-at registration \
---stop-at quantification
-```
-
-The raw images are that of myofibroblasts, however as can be seen below, the first image I tried to analyze had a low resolution, there were myofibroblasts without nuclei, but with markers, some were donut-shaped. All in all, difficult images to analyze.
-
-REMOVE THESE
-![first_low_res_comprosite_whole](https://user-images.githubusercontent.com/86408271/159475017-b73015e9-2fdd-45f4-aa70-1da98550a7a2.jpg)
-Below are layered segmentations where it can be seen that out-of-the-box Mesmer (blue) segments the nuclei the best, and unadjusted Unmicst (red) and untrained Ilastik  (green) struggle a lot. 
-![first_image_layered_segmentations](https://user-images.githubusercontent.com/86408271/159475383-b5aebe36-5e30-4171-991f-066d09db5cbc.jpg)
-
-Then we received a higher-resolution image on which we decided to perform spot counting. Unfortunately it turned out that whole-cell segmentation was not possible with this configuration of markers as there was a lack of a membrane marker. 
-An idea I had regarding myofibroblast whole-cell segmentation was to use their autofluorescence to detect their cytoplasm. I decided to use the autofluorescence in the green channel as opposed to the autofluorescence in the DAPI channel beacuse I wouldn't have the nuclear signal from different cell types as on the image slide, only myofibroblasts autofluoresce. The biggest problem by far was the lack of uniform signal in the green channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however we decided it wouldn't be a good use of time and turned the analysis in a different direction.
-
-My next goal was to perform spot counting in QuPath while Florian would do it in Fiji. Before that I installed QuPath, CellProfiler and Napari and took a day getting to know how they work and what they should be used for.
-In QuPath, because whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. LINK_____ . In short, I ran ____insert functions___ as a result, I had the each "spot group" annotated separately which could be quantified and located on the original image. Big shortcomings of this method were the fact that thresholding was done manually, there were regions of high intensity with more spots which would only be counted as one, and of course, not all spots would be captured by the threshold.
-In comparison, Florian's approach with a Fiji plugin called RS-FISH performed much better because the method used there is based on gradients a spot would form to calculate spot location.
-
+I performed the spot counting in QuPath. Since whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. For each channel, I ran the functions: `Classify -> Pixel classification -> Create thresholder` where I manually set the threshold based on the channel. As a result, all pixel groups above the threshold would be counted as one spot, and its coordinates and quantification could be extracted. Big shortcomings of this method were the fact that thresholding was done manually, and that there were regions of high intensity with more spots. These regions would only be counted as one spot even though they contained many, therefore not all the spots would be captured with the classification, and not all spots would be above the threshold.
+As a better approach, Florian has used the tool RS-FISH which calculates the probability of spot coordinates based on gradients the spot would form to calculate spot location. Another interesting approach to spot counting and annotation is deepBlink, [https://doi.org/10.1093/nar/gkab546]
 Compare RS-FISH to my QuPath pixel thresholding approach with images and measurements.
 
 
@@ -202,3 +176,6 @@ As proof of concept, I've managed to run the first 2x2 tile area of the image wi
 ![cycif_prestitched_corrected_cycle2](https://user-images.githubusercontent.com/86408271/161274457-0f150447-34a0-49cb-b482-fddbb8e31cad.jpg)
 
 
+
+References:
+Larcher, V., Kunderfranco, P., Vacchiano, M., Carullo, P., Erreni, M., Salamon, I., Colombo, F. S., Lugli, E., Mazzola, M., Anselmo, A., & Condorelli, G. (2018). An autofluorescence-based method for the isolation of highly purified ventricular cardiomyocytes. Cardiovascular research, 114(3), 409–416. https://doi.org/10.1093/cvr/cvx239
