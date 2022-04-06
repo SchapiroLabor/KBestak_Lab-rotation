@@ -55,8 +55,12 @@ Below is a result of registering and stitching (this time with the `Pairwise Sti
 ![Cy3](https://user-images.githubusercontent.com/86408271/162016016-76843c9e-92f6-4d48-b1c8-95dc57fe8c26.jpg)
 
 
+### ASHLAR approach
 
-Stitching plugin
+
+
+
+### Palom approach
 
 Ashlar - preprocessing the data with Fiji to be able to feed it to Ashlar
 
