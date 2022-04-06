@@ -42,17 +42,13 @@ Cyclic Immunofluorescene (CycIF) is a method of obtaining highly multiplexed imm
 
 The goal of this part of the rotation was to help our collaborator Johanna Wagner who is performing CycIF experiments with setup to be able to analyze her data with the MCMICRO pipeline.
 
-The first images we received were pre-stitched images with each channel of each cycle being in a separate `.tif` file. Due to at-the-time-told-so limitations of the machine, it was thought there was no way to export the individual tiles. Also no illumination correction was done on the pre-stitched tiles. 
-MCMICRO contains modules for different purposes in its pipeline. BaSiC is the illumination correction module which produces the `ffp` and `dfp` images (flat-field profile and dark field-profile, respectively). ASHLAR registers and stitches tiles and applies the illumination correction from BaSiC on the image to produce the whole image as a `.ome.tiff` file.
+The first images we received were pre-stitched images with each channel of each cycle being in a separate `.tif` file. Due to at-the-time-told equipment limitations, it was thought there was no way to export the individual tiles. Also no illumination correction was done on the pre-stitched tiles. 
+MCMICRO contains modules for different purposes in its pipeline. BaSiC is the illumination correction module which produces the `ffp` and `dfp` images (flat-field profile and dark field-profile, respectively). ASHLAR registers and stitches tiles and applies the illumination correction from BaSiC on the image to produce the whole image as a `.ome.tiff` file. The main goal was to be able to register the cycles, apply illumination correction if possible and be able to run the CycIF images with MCMICRO.
 
+### ImageJ approach
 
-CYCIF - everything in detail
+The initial approach to apply registration on the pre-stitched CycIF images was to use the ImageJ plugin StackRegJ. When running the StackRegJ plugin on my machine, I ran into memory issues which is why I decided to go with pseudotiling - to fragment the original image into tiles, register the individual tiles, and stitch them back together to obtain a registered complete image. The macro can be found ___connect____ but it requires manual input of filepaths.
 
-how does cycif work
-how the data looked
-What I tried out
-what worked
-what didn't work
 
 ImageJ macro
 StackRegJ and TurboReg plugins
