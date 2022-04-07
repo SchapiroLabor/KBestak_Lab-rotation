@@ -110,8 +110,8 @@ The Hoechst channel with overlaid cycles:
 
 The uncorrected and corrected Cy3 channels from the first cycle:
           Uncorrected           |           Corrected
-:------------------------------:|:--------------------------------:
-![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)        | ![](/Images/cycif_prestitched_corrected_cycle1.jpg)
+:---------------------------:|:--------------------------------:
+![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)    | ![](/Images/cycif_prestitched_corrected_cycle1.jpg)
 
 
 
