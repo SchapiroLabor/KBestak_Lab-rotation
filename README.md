@@ -62,6 +62,7 @@ Below is a result of registering and stitching (this time with the `Pairwise Sti
 #### Applying illumination correction with BaSiC and registration and stitching with ASHLAR on pre-stitched images
 
 After discussion with MCMICRO developers, it was confirmed that currently the MCMICRO pipeline cannot analyze the images in the format they are now (single `.tif` files per cycle-channel-tile combination) and that I should apply [BaSiC](https://github.com/labsyspharm/basic-illumination) and ASHLAR separately and feed the results back to MCMICRO.
+
 The 2-cycle image I had to analyze had the dimensions 19858 x 18034 pixels with the grid being 11 tiles wide and 10 wides high. This could be counted from the Cy3 channel where the tiles were very visible. That means that each tile was approximately 1805 x 1803 pixels in size. Currently, the size of the illumination correction flat field and dark field profiles has to be the same as the size of the tiles, and since ASHLAR requires an overlap, it would be impossible to just do the illumination correction on single tiles and register with ASHLAR at the same time. The compromise was found by using a small overlap which would result in some artifacts, but at least periodic illumination artifacts would be removed.
 
 
