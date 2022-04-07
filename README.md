@@ -51,9 +51,10 @@ The initial approach to apply registration on the pre-stitched CycIF images was 
 
 Below is a result of registering and stitching (this time with the `Pairwise Stitching` function from the Stitching plugin for ImageJ) showing the registered nuclear channel (red is first cycle, yellow is second cycle), and the Cy3 channel (green is first cycle, blue is second cycle) showing stitching artifacts from image acquisition and no stitching artifact introduced with this method. The contrast was lowest for the Cy3 channel which is why the artifacts are most visible there.
 
-<img align="left" width="200" height="100" src="/Images/Nuclei.jpg">
-
+Overlaid registered Hoechst channel from cycle 1 (red) and cycle 2 (yellow):
 ![Nuclei](/Images/Nuclei.jpg)
+
+Overlaid registered Cy3 channel from cycle 1 (blue) and cycle 2 (green):
 ![Cy3](/Images/Cy3.jpg)
 
 
@@ -109,8 +110,8 @@ The Hoechst channel with overlaid cycles:
 
 The uncorrected and corrected Cy3 channels from the first cycle:
 Solarized Uncorrected           |       Solarized Corrected
-:------------------------------:|:------------------------------:
-![](/Images/cycif_prestitched_corrected_cycle1.jpg)        |  ![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)
+:------------------------------:|:--------------------------------:
+![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)        |  ![](/Images/cycif_prestitched_corrected_cycle1.jpg)
 
 
 
