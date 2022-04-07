@@ -51,13 +51,17 @@ The initial approach to apply registration on the pre-stitched CycIF images was 
 
 Below is a result of registering and stitching (this time with the `Pairwise Stitching` function from the Stitching plugin for ImageJ) showing the registered nuclear channel (red is first cycle, yellow is second cycle), and the Cy3 channel (green is first cycle, blue is second cycle) showing stitching artifacts from image acquisition and no stitching artifact introduced with this method. The contrast was lowest for the Cy3 channel which is why the artifacts are most visible there.
 
+
+[Nuclei](/Images/Nuclei.jpg)
+[Cy3](/Images/Cy3.jpg)
+
 ![Nuclei](https://user-images.githubusercontent.com/86408271/162015991-5860e23b-1c81-4227-976c-ec905f3b7dc1.jpg)
 ![Cy3](https://user-images.githubusercontent.com/86408271/162016016-76843c9e-92f6-4d48-b1c8-95dc57fe8c26.jpg)
 
 
 ### ASHLAR approach to pre-stitched images
 
-[ASHLAR](https://github.com/labsyspharm/ashlar) is the module used by MCMICRO to perform alignment and registration. For testing purposes, I used it outside of MCMICRO from its Docker container `labsyspharm/ashlar`. It could not register the whole images as they were, so I decided to preprocess the images with an ImageJ macro (INSERT LINK) to convert them to pseudotiles which could then be used by ASHLAR with the `fileseries` function. ASHLAR requires overlaps for alignment and stitching so, as previously, the pseudotiles contained tiles. However, when applying ASHLAR on the whole preprocessed first 2-cycle image, I kept receiving the `ValueError: ('Contradictory paths found:', 'negative weights?')` error which I think happens due to the images containing lots of autofluorescing dirt which make it difficult for the registration to work properly.
+[ASHLAR](https://github.com/labsyspharm/ashlar) is the module used by MCMICRO to perform alignment and registration. For testing purposes, I used it outside of MCMICRO from its Docker container `labsyspharm/ashlar`. It could not register the whole images as they were, so I decided to preprocess the images with an ImageJ macro (INSERT LINK) to convert them to pseudotiles which could then be used by ASHLAR with the `fileseries` function. ASHLAR requires overlaps for alignment and stitching so, as previously, the pseudotiles contained tiles. However, when applying ASHLAR on the whole preprocessed first 2-cycle image, I kept receiving the `ValueError: ('Contradictory paths found:', 'negative weights?')` error which I think happens due to the images containing lots of autofluorescing dirt which make it difficult for the registration to work properly. When using ASHLAR on certain parts of the image, it worked well, but it could not register the whole image. It should be pointed out that it could register some regions which the StackRegJ registration struggled with.
 
 #### Applying illumination correction with BaSiC and registration and stitching with ASHLAR on pre-stitched images
 
