@@ -13,7 +13,7 @@ Running MCMICRO on the 'exemplar-001' dataset is very useful for getting used to
 My first task was to use MCMICRO to segment nuclei in an image of cardiomyocytes from a colaborator where I explored the command format and parameter tuning.
 The MCMICRO webpage contains details on parameter tuning: https://mcmicro.org/modules/
 Below is an example of a command which runs MCMICRO on the image within the `raw` folder which is inside the folder `Example_image_1`. It should be noted that the current directory when running the command needs to be one level above `Example_image_1`, otherwise the path should be specified. The sample name is arbitrary and only affects the output file.
-It calculates the probability maps with UnMICST and Ilastik which are followed by watershed segmentation with S3segmentor. Another module applied is Mesmer, a deep-learning-enabled segmentation algorithm which can segment the nuclei and cells itself, if provided the right markers. The channel for segmentation is set to 0, the DAPI channel because the main goal was to segment the nuclei.
+It calculates the probability maps with UnMICST and Ilastik which are followed by watershed segmentation with S3segmentor. Another module applied is Mesmer, a deep-learning-enabled segmentation algorithm which can segment the nuclei and cells itself, if provided the right markers. The channel for segmentation is set to 0, the DAPI channel because the main goal was to segment the nuclei. `\` is used to continue the command in the next line.
 ```
 nextflow run labsyspharm/mcmicro \
 --in Example_image_1 \
@@ -62,11 +62,47 @@ Below is a result of registering and stitching (this time with the `Pairwise Sti
 #### Applying illumination correction with BaSiC and registration and stitching with ASHLAR on pre-stitched images
 
 After discussion with MCMICRO developers, it was confirmed that currently the MCMICRO pipeline cannot analyze the images in the format they are now (single `.tif` files per cycle-channel-tile combination) and that I should apply [BaSiC](https://github.com/labsyspharm/basic-illumination) and ASHLAR separately and feed the results back to MCMICRO.
-The 2-cycle image I had to analyze had the dimensions 19858 x 18034 pixels with the grid being 11 tiles wide and 10 wides high. This could be counted from the Cy3 channel where the tiles were very visible. That means that each tile was approximately 1805 x 1803 pixels in size. Currently, the size of the illumination correction flat field and dark field profiles has to be the same as the size of the tiles, and since ASHLAR requires an overlap, it would be impossible to just do the illumination correction on single tiles and register with ASHLAR at the same time. The compromise was found by using a small overlap which would result in some artifacts, but at least periodic illumination artifacts would be removed.
+
+The 2-cycle image I had to analyze had the dimensions 19858 x 18034 pixels with the grid being 11 tiles wide and 10 wides high. This could be counted from the Cy3 channel where the tiles were very visible and so far it has to be manually counted. That means that each tile was approximately 1805 x 1803 pixels in size. Currently, the size of the illumination correction flat field and dark field profiles has to be the same as the size of the tiles, and since ASHLAR requires an overlap, it would be impossible to just do the illumination correction on single tiles and register with ASHLAR at the same time. The compromise was found by using a small overlap which would result in some artifacts, but at least periodic illumination artifacts would be removed. Another thing to note is that ASHLAR requires that all tiles have the same size which, if the tiles visible in the image are just expanded by 100 px, there would be an error so when creating the pseudotiles, a border would be added to the original image.
+Again, an ImageJ macro (INSERT LINK) was used to create the border and pseudotiles with a known overlap. It is important that the naming follows the convention `cycle_{x}_channel_{y]_tile_{zzz}.tif` convention for BaSiC and ASHLAR commands.
+
+BaSiC command used:
+```
+docker run -it \
+-v '/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/Unstitched_illumination/raw':/data \
+-v '/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/Unstitched_illumination/illumination':/output \
+labsyspharm/basic-illumination \
+ImageJ-linux64 --ij2 \
+--headless \
+--run imagej_basic_ashlar_filepattern.py \
+"pattern='/data/cycle_{i}_tile_{tile}_channel_{channel}.tif',output_dir='/output',experiment_name='Cycif_prestitched'"
+```
+Since the commands are run through WSL, to access the D: drive, the path `/mnt/d/` should be used. The input folder is mounted as `/data` and the output folder is mounted as `/output`. The output of BaSiC is used by ASHLAR for illumination correction. It is important to specify the pattern used when naming the tiles!
+
+ASHLAR command used:
+```
+docker run \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/Unstitched_illumination/raw":/input \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/Unstitched_illumination/illumination":/illumination \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/Unstitched_illumination/registered":/output \
+-it labsyspharm/ashlar:1.14.0 ashlar \
+-o /output \
+--align-channel 0 \
+"fileseries|/input|pattern=cycle_0_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
+"fileseries|/input|pattern=cycle_1_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
+--ffp '/illumination/Cycif_prestitched-ffp.tif' \
+--dfp '/illumination/Cycif_prestitched-dfp.tif' \
+--filter-sigma 0 \
+--maximum-shift 500 \
+--tile-size 512 \
+--pyramid \
+-f cycif_prestitched_corrected.ome.tif
+```
+Again, folders are mounted to the docker image, the `fileseries` function is used with the appropriate pattern, the width and height of the grid, overlap between tiles as a percentage, pixel size and layout. The tiles in this example are laid out as default, but there are also `snake` and `raster` options available if appropriate. Illumination correction is applied with the `--ffp` and `--dfp` parameters. The end result is a pyramidal `.ome.tif` registered and illumination-corrected full image.
+
+Unfortunately, the full image couldn't be processed this way as previously mentioned due to the autofluorescing dirt. However, as proof of concept, the first 2x2 tile region could be registered and the images are below.
 
 
-
-The command I used to run ASHLAR on the pseudotiles was:
 
 
 
@@ -152,40 +188,8 @@ load imagej macros and py files
 
 Illumination correction on the pre-stitched images.
 BaSiC command
-```
-docker run -it \
--v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/raw':/data \
--v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/illumination':/output \
-labsyspharm/basic-illumination \
-ImageJ-linux64 --ij2 \
---headless \
---run imagej_basic_ashlar_filepattern.py \
-"pattern='/data/cycle_{i}_tile_{tile}_channel_{channel}.tif',output_dir='/output',experiment_name='Cycif_prestitched'"
-```
 
-ASHLAR command
-```
-docker run \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/raw":/input \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/illumination":/illumination \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/Unstitched_illumination/registered":/output \
--it labsyspharm/ashlar:1.14.0 ashlar \
--o /output \
---align-channel 0 \
-"fileseries|/input|pattern=cycle_0_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
-"fileseries|/input|pattern=cycle_1_tile_{series:3}_channel_{channel:1}.tif|width=11|height=10|overlap=0.11|pixel_size=0.325" \
---ffp '/illumination/Cycif_prestitched-ffp.tif' \
---dfp '/illumination/Cycif_prestitched-dfp.tif' \
---filter-sigma 0 \
---maximum-shift 500 \
---tile-size 512 \
---pyramid \
--f cycif_prestitched_corrected.ome.tif
-```
-I keep getting the following error when running ASHLAR on the prestitched images: 
-```
-ValueError: ('Contradictory paths found:', 'negative weights?')
-```
+
 As proof of concept, I've managed to run the first 2x2 tile area of the image with BaSiC and ASHLAR, however it looks like the result without illumination correction is better.
 ![composite_registered_2x2](https://user-images.githubusercontent.com/86408271/161274302-388f2f65-168f-4325-98af-62bc2d71fd74.jpg)
 
