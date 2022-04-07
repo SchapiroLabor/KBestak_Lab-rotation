@@ -52,8 +52,8 @@ The initial approach to apply registration on the pre-stitched CycIF images was 
 Below is a result of registering and stitching (this time with the `Pairwise Stitching` function from the Stitching plugin for ImageJ) showing the registered nuclear channel (red is first cycle, yellow is second cycle), and the Cy3 channel (green is first cycle, blue is second cycle) showing stitching artifacts from image acquisition and no stitching artifact introduced with this method. The contrast was lowest for the Cy3 channel which is why the artifacts are most visible there.
 
 
-[Nuclei](/Images/Nuclei.jpg)
-[Cy3](/Images/Cy3.jpg)
+![Nuclei](/Images/Nuclei.jpg)
+![Cy3](/Images/Cy3.jpg)
 
 ![Nuclei](https://user-images.githubusercontent.com/86408271/162015991-5860e23b-1c81-4227-976c-ec905f3b7dc1.jpg)
 ![Cy3](https://user-images.githubusercontent.com/86408271/162016016-76843c9e-92f6-4d48-b1c8-95dc57fe8c26.jpg)
