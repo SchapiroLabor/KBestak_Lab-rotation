@@ -113,17 +113,12 @@ The uncorrected and corrected Cy3 channels from the first cycle:
 :---------------------------:|:--------------------------------:
 ![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)    | ![](/Images/cycif_prestitched_corrected_cycle1.jpg)
 
-
-
-
-
-within MCMICRO currently is not able to perform the registration of full images 
-single `.tif` files based on each cycle-tile-channel combination so I had to use it outside of MCMICRO from its Docker container.
+The uncorrected images were obtained through ASHLAR without the `--ffp` and `--dfp` parameters. The registration performs well, however because the tiles which were used for illumination correction also contained an overlap, the resulting illumination-corrected image shows newly introduced artifacts compared to the uncorrected image, however it can only be seen in the Cy3 channel and the lens illumination issue which can be seen at the bottom of each original tile was removed.
 
 
 ### Palom approach to pre-stitched images
 
-Ashlar - preprocessing the data with Fiji to be able to feed it to Ashlar
+
 
 Palom - works great, _CODE to get it working on the first image_
 -modified function so that it runs on multiple channels
