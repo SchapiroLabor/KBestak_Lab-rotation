@@ -28,7 +28,7 @@ It should be taken into account that the previous command runs the segmentation 
 ### Whole-cell segmentation based on cytoplasmic autofluorescence and spot counting with QuPath
 
 We received a higher-resolution images, however, unfortunately whole-cell segmentation was not possible on the images due to a lack of a membrane marker so we decided to perform spot counting.
-The cytoplasm of cardiomyocytes shows autofluorescence in the DAPI and FITC channels which had previously been used for cell sorting (Larcher *et al*. 2018) and I had the idea to use their autofluorescence for whole-cell segmentation. The DAPI channel images also contained nuclei from fibroblasts which is why I decided to use the FITC channel for whole-cell segmentation. I decided to use the autofluorescence in the FITC channel as opposed to the autofluorescence in the DAPI channel beacuse I would not have the nuclear signal from different cell types as on the image slide because only cardiomyocytes show autofluorescence. The biggest problem by far was the lack of uniform signal in the FITC channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however, we decided it wouldn't be a good use of time and turned the analysis in a different direction.
+The cytoplasm of cardiomyocytes shows autofluorescence in the DAPI and FITC channels which had previously been used for cell sorting ([Larcher *et al*. 2018](https://doi.org/10.1093/cvr/cvx239)) and I had the idea to use their autofluorescence for whole-cell segmentation. The DAPI channel images also contained nuclei from fibroblasts which is why I decided to use the FITC channel for whole-cell segmentation. I decided to use the autofluorescence in the FITC channel as opposed to the autofluorescence in the DAPI channel beacuse I would not have the nuclear signal from different cell types as on the image slide because only cardiomyocytes show autofluorescence. The biggest problem by far was the lack of uniform signal in the FITC channel which prevented nice background separation and segmentation. Since I think it would be possible to segment them by hand, I'm sure there is a way to make it work automatically, however, we decided it wouldn't be a good use of time and turned the analysis in a different direction.
 
 I performed the spot counting in QuPath. Since whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. For each channel, I ran the functions: `Classify -> Pixel classification -> Create thresholder` where I manually set the threshold based on the channel. As a result, all pixel groups above the threshold would be counted as one spot, and its coordinates and quantification could be extracted. Big shortcomings of this method were the fact that thresholding was done manually, and that there were regions of high intensity with more spots. These regions would only be counted as one spot even though they contained many, therefore not all the spots would be captured with the classification, and not all spots would be above the threshold.
 As a better approach, Florian has used the [RS-FISH](https://github.com/PreibischLab/RS-FISH) tool which calculates the probability of spot coordinates based on gradients the spot would form to calculate spot location. 
@@ -38,7 +38,7 @@ Another interesting approach to spot counting and annotation is [deepBlink](http
 
 ### CycIF introduction
 
-Cyclic Immunofluorescene (CycIF) is a method of obtaining highly multiplexed immunofluorescence images. It uses sequential 4- to 6-channel imaging followed by fluorophore inactivation or washing. Repeating cycles preserve the cell morphology and the resulting images can have up to 30 channels (Lin *et al*. 2016). The main goal of CycIF image analysis is to obtain the registered image across cycles so that single-cell analysis can be performed.
+Cyclic Immunofluorescene (CycIF) is a method of obtaining highly multiplexed immunofluorescence images. It uses sequential 4- to 6-channel imaging followed by fluorophore inactivation or washing. Repeating cycles preserve the cell morphology and the resulting images can have up to 30 channels ([Lin *et al*. 2016](https://doi.org/10.1002/cpch.14)). The main goal of CycIF image analysis is to obtain the registered image across cycles so that single-cell analysis can be performed.
 
 The goal of this part of the rotation was to help our collaborator Johanna Wagner who is performing CycIF experiments with setup to be able to analyze her data with the MCMICRO pipeline.
 
@@ -102,7 +102,15 @@ docker run \
 ```
 Again, folders are mounted to the docker image, the `fileseries` function is used with the appropriate pattern, the width and height of the grid, overlap between tiles as a percentage, pixel size and layout. The tiles in this example are laid out as default, but there are also `snake` and `raster` options available if appropriate. Illumination correction is applied with the `--ffp` and `--dfp` parameters. The end result is a pyramidal `.ome.tif` registered and illumination-corrected full image.
 
-Unfortunately, the full image couldn't be processed this way as previously mentioned due to the autofluorescing dirt. However, as proof of concept, the first 2x2 tile region could be registered and the images are below.
+Unfortunately, the full image couldn't be processed this way as previously mentioned due to the autofluorescing dirt. However, as proof of concept, the first 2x2 tile region could be registered with illumination correction applied.
+
+The Hoechst channel with overlaid cycles:
+![Corrected_nuclei](/Images/composite_registered_2x2.jpg)
+
+The uncorrected and corrected Cy3 channels from the first cycle:
+Solarized Uncorrected           |       Solarized Corrected
+:------------------------------:|:------------------------------:
+![](/Images/cycif_prestitched_corrected_cycle1.jpg)        |  ![](/Images/cycif_prestitched_uncorrected_cycle1.jpg)
 
 
 
