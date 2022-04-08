@@ -118,7 +118,26 @@ The uncorrected images were obtained through ASHLAR without the `--ffp` and `--d
 
 ### Palom approach to pre-stitched images
 
-[Palom](https://github.com/Yu-AnChen/palom) is an in-development tool for registering whole-slide images by one of the developers of ASHLAR. It is able to register large pre-stitched images such as the data I had to analyze. I added a function 
+[Palom](https://github.com/Yu-AnChen/palom) is an in-development tool for registering whole-slide images by one of the developers of ASHLAR. It is able to register large pre-stitched images such as the data I had to analyze. I added a [function] (/Scripts/run_palom_no_color_prestitched.py) to base Palom based on the [`run_palom()`](https://github.com/Yu-AnChen/palom/blob/b1c5d76a0238f786546680bf24cc09d0d592f215/palom/cli/svs.py#L173) function from Palom modified to be able to work on my images. Currently, the function can only be run from within Python manually, but I'll be adding the CLI shortly. The current input method for Palom is one stack per cycle so I had to preprocess my data again with the following [ImageJ macro]() for just creating stacks from single-channel `.tif` files.
+
+If registration of large pre-stitched images is necessary without illumination correction, Palom performs the best!
+
+I was able to run Palom on the 2-cycle image with the instructions on the Palom [README](https://github.com/Yu-AnChen/palom#for-tiff-and-ome-tiff-files) with the following [functions]().
+
+Running the following function in Python (with Palom installed, and the added function defined) on the three-cycle image with
+```
+run_palom_kb(
+    img_paths = [
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/211208_IMT_m102119_02_20x_cycle1.tif", 
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/211209_IMT_M102119_02_20X_cycle2.tif",
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/220125_IMT_M102119_02_01_20x_02_cycle3.tif"
+    ],
+    pixel_size = 0.325,
+    channel_names = ["DAPI", "FITC", "Cy3", "Cy5"],
+    output_path = r"D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/image_2/mosaic_whole_example.ome.tiff",
+    level = 0
+)
+```
 
 Palom - works great, _CODE to get it working on the first image_
 -modified function so that it runs on multiple channels
