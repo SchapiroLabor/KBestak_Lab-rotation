@@ -1,6 +1,4 @@
-# Lab-rotation in Computational biomedicine - image analysis with a focus on stitching and registration
-
-I joined the group as a part of a mandatory student internship within the Working in Biosciences course as part of my Molecular Biosciences master with the major in Systems biology on February 1. 2022. and my rotation lasted until April 14. 2022.
+# Lab-rotation in Spatial omics - image analysis with a focus on stitching and registration
 
 ### Nextflow and MCMICRO setup on a Windows machine
 Detailed instructions: https://www.nextflow.io/blog/2021/setup-nextflow-on-windows.html
@@ -168,7 +166,7 @@ Currently, to run the base-Palom functions, Python needs to be accessed from wit
 
 [BFtools](https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html) (Bio-Formats tools) are a useful group of tools for command line processing of bioformats images. The `bfconvert` tool was the most useful tool for my purposes as it allows for conversion between filetypes and cropping of selected regions. My plan was to use `bfconvert` to circumvent the need for ImageJ macros because it could be run from a command line interface and avoid opening images in Fiji for preprocessing, however since the ImageJ macro approach worked, there was no need, but if necessary, the approach will be looked into.
 
-### New unstitched tile registration and illumination correction
+### Analysis of unstitched CycIF images
 
 It had become known that it actually was possible to extract the original tiles from the microscope when imaging via hidden functions so my next step was to perform illumination correction and tile alignment and registration on the images.
 The new images contained 6 cycles, each with 5 channels and 6 tiles, all as separate `.tif` files, so in total 30 `.tif` files per cycle. Because MCMICRO is currently unable to run such images, I again performed illumination correction with BaSiC and registration and stitching with ASHLAR separately. I had to write another short [ImageJ macro](/Scripts/renaming_tiles_CycIF_tonsil.ijm) to rename the tiles so that a pattern could be used for registration.
