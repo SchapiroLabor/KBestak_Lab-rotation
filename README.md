@@ -118,80 +118,79 @@ The uncorrected images were obtained through ASHLAR without the `--ffp` and `--d
 
 ### Palom approach to pre-stitched images
 
-[Palom](https://github.com/Yu-AnChen/palom) is an in-development tool for registering whole-slide images by one of the developers of ASHLAR. It is able to register large pre-stitched images such as the data I had to analyze. I added a [function] (/Scripts/run_palom_no_color_prestitched.py) to base Palom based on the [`run_palom()`](https://github.com/Yu-AnChen/palom/blob/b1c5d76a0238f786546680bf24cc09d0d592f215/palom/cli/svs.py#L173) function from Palom modified to be able to work on my images. Currently, the function can only be run from within Python manually, but I'll be adding the CLI shortly. The current input method for Palom is one stack per cycle so I had to preprocess my data again with the following [ImageJ macro]() for just creating stacks from single-channel `.tif` files.
+[Palom](https://github.com/Yu-AnChen/palom) is an in-development tool for registering whole-slide images by one of the developers of ASHLAR. It is able to register large pre-stitched images such as the data I had to analyze. I added a [function](/Scripts/run_palom_no_color_prestitched.py) to base Palom based on the [`run_palom()`](https://github.com/Yu-AnChen/palom/blob/b1c5d76a0238f786546680bf24cc09d0d592f215/palom/cli/svs.py#L173) function from Palom modified to be able to work on my images. Currently, the function can only be run from within Python manually, but I'll be adding the CLI shortly. The current input method for Palom is one stack per cycle so I had to preprocess my data again with the following [ImageJ macro](/Scripts/stack_from_single_channel_tif_files_basic.ijm) for just creating stacks from single-channel `.tif` files.
 
 If registration of large pre-stitched images is necessary without illumination correction, Palom performs the best!
 
-I was able to run Palom on the 2-cycle image with the instructions on the Palom [README](https://github.com/Yu-AnChen/palom#for-tiff-and-ome-tiff-files) with the following [functions]().
+I was able to run Palom on the 2-cycle image with the instructions on the Palom [README](https://github.com/Yu-AnChen/palom#for-tiff-and-ome-tiff-files) with the following [functions](Palom_only_2_cycle.py) and get the whole image registered well.
 
-Running the following function in Python (with Palom installed, and the added function defined) on the three-cycle image with
+For running Palom on multiple cycle, 
+
+Running the following function in Python (with Palom installed, and the added [function](/Scripts/run_palom_no_color_prestitched.py defined) on the three-cycle image with different sizes between cycles produced well-registered images:
 ```
-run_palom_kb(
+import palom
+
+run_palom_no_color_prestitched(
     img_paths = [
-        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/211208_IMT_m102119_02_20x_cycle1.tif", 
-        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/211209_IMT_M102119_02_20X_cycle2.tif",
-        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/220125_IMT_M102119_02_01_20x_02_cycle3.tif"
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/211208_IMT_m102119_02_20x_cycle1.tif", 
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/211209_IMT_M102119_02_20X_cycle2.tif",
+        "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/220125_IMT_M102119_02_01_20x_02_cycle3.tif"
     ],
     pixel_size = 0.325,
     channel_names = ["DAPI", "FITC", "Cy3", "Cy5"],
-    output_path = r"D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/example_2/image_2/mosaic_whole_example.ome.tiff",
+    output_path = r"D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/output/mosaic.ome.tiff",
     level = 0
 )
 ```
 
-Palom - works great, _CODE to get it working on the first image_
--modified function so that it runs on multiple channels
+The whole 3-cycle image registered with overlaid DAPI channels:
+![](/Images/3_cycle_image_whole.jpg)
+
+The registration is overall very good, some cells were washed away between cycles, and the border region where the different sizes between cycles is apparent:
+          Good registration          |           Washing away between cycles       | Border region
+:---------------------------:|:--------------------------------:|:-----------------------:
+![](/Images/3_cycle_image_selection1.jpg)    | ![](/Images/3_cycle_image_selection2.jpg) | ![](Images/3_cycle_image_selection3.jpg)
+
+
+### Making a Docker container for Palom
+
+It was decided that we would work towards implementing Palom as a module within MCMICRO so the first step would be to make a Docker container with it. 
+The [DOCKERFILE](/Docker-container/Dockerfile) and the [environment.yml](/Docker-container/environment.yml) can both be found in the Docker container folder.
+The container was built and/or ran with the following commands:
+```
+docker build -t palom:test .
+docker run -it palom:test /opt/conda/envs/palom/bin/python
+```
+Currently, to run the base-Palom functions, Python needs to be accessed from within the conda environment, and this will be adjusted with entrypoints and my newly defined function will be added, as well as continuous integration.
 
 
 ### BFtools
 
 [BFtools](https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html) (Bio-Formats tools) are a useful group of tools for command line processing of bioformats images. The `bfconvert` tool was the most useful tool for my purposes as it allows for conversion between filetypes and cropping of selected regions. My plan was to use `bfconvert` to circumvent the need for ImageJ macros because it could be run from a command line interface and avoid opening images in Fiji for preprocessing, however since the ImageJ macro approach worked, there was no need, but if necessary, the approach will be looked into.
 
+### New unstitched tile registration and illumination correction
 
-It would be great if I could have some comparison between the three approaches to registration.
+It had become known that it actually was possible to extract the original tiles from the microscope when imaging via hidden functions so my next step was to perform illumination correction and tile alignment and registration on the images.
+The new images contained 6 cycles, each with 5 channels and 6 tiles, all as separate `.tif` files, so in total 30 `.tif` files per cycle. Because MCMICRO is currently unable to run such images, I again performed illumination correction with BaSiC and registration and stitching with ASHLAR separately. I had to write another short [ImageJ macro](/Scripts/renaming_tiles_CycIF_tonsil.ijm) to rename the tiles so that a pattern could be used for registration.
 
-Running MCMICRO on the registered images from Palom - good segmentation with Mesmer (example), but error in quantification - markers.csv not matching channels - I still need to look into it
-Trying to do QC in Python - array too bign error
-
-
-
-New data from Johanna - she could get the tiles out without stitching - test it out in MCMICRO
-The new data we received related to the CycIF project has the tiles exported without being prestitched. There are 6 cycles with 5 channels per cycle and 6 tiles per cycle all as separate .tif files, meaning in total there are 30 .tif files per cycle. Running it in MCMICRO with the command below gives the following error. Currently I'm unsure how the input data should look like for BaSiC, or which options exactly to change for Ashlar, but currently it is not working.
-
-```
-nextflow run labsyspharm/mcmicro \
---in 220325_CyCIF_Tonsil_TileExport \
---sample-name extracted_tiles_stacked  \
---probability-maps unmicst, s3seg \
---unmicst-opts '--channel 1 --scalingFactor 0.5' \
---ashlar-opts '' \
---start-at illumination \
---stop-at quantification
-```
-```
-ERROR: Wrong number of flat-field profiles. Must be 1, or 181 (number of input files)
-```
-I did manage to run Ashlar from a Docker container on the tiles and produce a well-registered image. 
-
-I discussed with the developers of MCMICRO about the option of running the single `.tif` files I have with the MCMICRO pipeline, however, there is no such option currently, as it would require metadata within the `.ome.tiff` file for tile localization and stitching. They suggested I run the images through BaSiC for illumination correction and ASHLAR for registration and stitching outside of MCMICRO so that is what I did.
-BaSiC is a module used by MCMICRO for illumination correction, the first step of the pipeline. I was able to run my data through BaSiC with the following command:
+As described previously, I was able to run BaSiC on the images with the following command:
 ```
 docker run -it \
--v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/renamed_tiles':/data \
--v '/mnt/d/Systems Biology/Denis Schapiro group/CycIF/illumination':/output \
+-v '/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/renamed_tiles':/data \
+-v '/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/illumination':/output \
 labsyspharm/basic-illumination \
 ImageJ-linux64 --ij2 \
 --headless \
 --run imagej_basic_ashlar_filepattern.py \
 "pattern='/data/cycle_{series}_tile_{tile}_channel_{channel}.tif',output_dir='/output',experiment_name='CycIF_tonsil'"
 ```
-with the command `-v` I mount the input folder with the renamed tiles in a `cycle_{ii}_channel_{jj}_tile_{kk}.tif` format, and the output folder. Within the container, I use ImageJ-linux64 to run the python script which can handle this data format, and give it the pattern. The resulting ffp and dfp `.tif` files are saved in my `illumination` folder.
-Then I pass the images and ffp and dfp `.tif` files to ASHLAR for registration and stitching with the following command:
+With the command `-v` I mount the input folder with the renamed tiles in a `cycle_{ii}_channel_{jj}_tile_{kk}.tif` format, and the output folder. Within the container, ImageJ-linux64 is used to run the python script which can handle this data format, and give it the pattern. The resulting ffp and dfp `.tif` files were saved in my `illumination` folder.
+After that, ASHLAR was applied with the following command:
 ```
 docker run \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/renamed_tiles":/input \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/illumination":/illumination \
--v "/mnt/d/Systems Biology/Denis Schapiro group/CycIF/tonsil/registered":/output \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/renamed_tiles":/input \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/illumination":/illumination \
+-v "/mnt/d/Systems_Biology/Spatial_omics_lab_rotation/CycIF/tonsil/registered":/output \
 -it labsyspharm/ashlar:1.14.0 ashlar \
 -o /output \
 --align-channel 0 \
@@ -209,29 +208,13 @@ docker run \
 --pyramid \
 -f cycif-corrected_whole_0_65.ome.tif
 ```
-The command mounts the `renamed_tiles` folder as input, `illumination` as illumination and `registered` folder as output. I use the Hoechst channel for alignment. I did try out the alignment with different channels, and all but channel 1 were comparable, with channel 1 being the least reliable. With the currently undocumented function `fileseries` I was able to match the pattern for each channel, set the width (number of tiles in x axis) and height (number of tiles in y axis), the overlap which I had to estimate myself, set the pixel size and layout. the `--ffp` and `--dfp` parameters are given their appropriate illumination correction file from BaSiC. The `--pyramid` option tells ASHLAR to produce a pyramidal tiff as a result.
 
-load imagej macros and py files
+The command mounts the `renamed_tiles` folder as input, `illumination` as illumination and `registered` folder as output. I use the Hoechst channel for alignment. I did try out the alignment with different channels, and all but channel 1 were comparable, with channel 1 being the least reliable. With the currently undocumented function `fileseries` I was able to match the pattern for each channel, set the width (number of tiles in x axis) and height (number of tiles in y axis), the overlap which I had to estimate myself, and set the pixel size and layout. It should be noted that the layout of the tiles was different here than in the previous case, so the `snake` layout had to be defined. The `--ffp` and `--dfp` parameters are given their appropriate illumination correction file from BaSiC. The `--pyramid` option tells ASHLAR to produce a pyramidal tiff as a result.
 
+Below can be seen the whole registered image. The overlaid channels were done in Fiji with the use of `Image -> Color -> Merge channels...` function.
 
-Illumination correction on the pre-stitched images.
-BaSiC command
+![](/Images/Composite_065_whole.jpg)
 
+After running Mesmer within MCMICRO for nuclear segmentation, the result was a segmentation mask and below is an excerpt of the whole registered image with an overlaid segmentation mask (showing nuclear borders).
 
-As proof of concept, I've managed to run the first 2x2 tile area of the image with BaSiC and ASHLAR, however it looks like the result without illumination correction is better.
-![composite_registered_2x2](https://user-images.githubusercontent.com/86408271/161274302-388f2f65-168f-4325-98af-62bc2d71fd74.jpg)
-
-![composite_zoomed_2x2](https://user-images.githubusercontent.com/86408271/161274337-f27970eb-4d57-4ed9-8aae-c02dda0389e0.jpg)
-
-![not_corrected_comparison_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161274381-818eef3c-8508-4fea-aa90-b12e87290f72.jpg)
-![cycif_prestitched_corrected_cycle1](https://user-images.githubusercontent.com/86408271/161274405-cc59b161-8086-4af9-a739-4e15fca4c3a1.jpg)
-![not_corrected_comparison_2_cycif_prestitched_corrected_not ome](https://user-images.githubusercontent.com/86408271/161274443-606dccf5-f951-477b-a2d6-06a1c6412247.jpg)
-
-
-![cycif_prestitched_corrected_cycle2](https://user-images.githubusercontent.com/86408271/161274457-0f150447-34a0-49cb-b482-fddbb8e31cad.jpg)
-
-
-
-References:
-Larcher, V., Kunderfranco, P., Vacchiano, M., Carullo, P., Erreni, M., Salamon, I., Colombo, F. S., Lugli, E., Mazzola, M., Anselmo, A., & Condorelli, G. (2018). An autofluorescence-based method for the isolation of highly purified ventricular cardiomyocytes. Cardiovascular research, 114(3), 409–416. https://doi.org/10.1093/cvr/cvx239
-Lin, J. R., Fallahi-Sichani, M., Chen, J. Y., & Sorger, P. K. (2016). Cyclic Immunofluorescence (CycIF), A Highly Multiplexed Method for Single-cell Imaging. Current protocols in chemical biology, 8(4), 251–264. https://doi.org/10.1002/cpch.14
+![](/Images/Mesmer_segmentation_composite_065.jpg)
