@@ -6,6 +6,7 @@ VS Code was setup as my main code editor for scripting in Python and interacting
 After Nextflow was successfully installed, running MCMICRO was easy from the clear instructions on the webpage: https://mcmicro.org/documentation/running-mcmicro.html
 Running MCMICRO on the 'exemplar-001' dataset is very useful for getting used to a command line interface and MCMICRO. It should be noted that the `.ome.tiff` files from the exemplar-001 dataset contain metadata about the layout of tiles which helps ASHLAR, the registration and stitching module, to stitch the tiles.
 
+
 ### Image segmentation with MCMICRO modules
 
 My first task was to use MCMICRO to segment nuclei in an image of cardiomyocytes from a colaborator where I explored the command format and parameter tuning.
@@ -23,6 +24,7 @@ nextflow run labsyspharm/mcmicro \
 ```
 It should be taken into account that the previous command runs the segmentation modules 'out-of-the-box' without further adjustments. Only Mesmer performs nearly perfectly 'out-of-the-box' whereas for UnMICST and Ilastik, additional parameters or training would be necessary.
 
+
 ### Whole-cell segmentation based on cytoplasmic autofluorescence and spot counting with QuPath
 
 We received a higher-resolution images, however, unfortunately whole-cell segmentation was not possible on the images due to a lack of a membrane marker so we decided to perform spot counting.
@@ -31,6 +33,7 @@ The cytoplasm of cardiomyocytes shows autofluorescence in the DAPI and FITC chan
 I performed the spot counting in QuPath. Since whole-cell segmentation was not possible, I opted for a pixel intensity thresholder in the three channels we were interested in quantifying. For each channel, I ran the functions: `Classify -> Pixel classification -> Create thresholder` where I manually set the threshold based on the channel. As a result, all pixel groups above the threshold would be counted as one spot, and its coordinates and quantification could be extracted. Big shortcomings of this method were the fact that thresholding was done manually, and that there were regions of high intensity with more spots. These regions would only be counted as one spot even though they contained many, therefore not all the spots would be captured with the classification, and not all spots would be above the threshold.
 As a better approach, Florian has used the [RS-FISH](https://github.com/PreibischLab/RS-FISH) tool which calculates the probability of spot coordinates based on gradients the spot would form to calculate spot location. 
 Another interesting approach to spot counting and annotation is [deepBlink](https://github.com/BBQuercus/deepBlink), a neural network-based method to detect and localize spots automatically. 
+
 
 ## Cyclic immunofluorescence project
 
@@ -42,6 +45,7 @@ The goal of this part of the rotation was to help our collaborator Johanna Wagne
 
 The first images we received were pre-stitched images with each channel of each cycle being in a separate `.tif` file. Due to at-the-time-told equipment limitations, it was thought there was no way to export the individual tiles. Also no illumination correction was done on the pre-stitched tiles. The first image was obtained through 2 cycles with 4 channels each, and the second image had 3 cycles with 4 channels each, however the first cycle had a different size compared to the second and third cycles.
 MCMICRO contains modules for different purposes in its pipeline. BaSiC is the illumination correction module which produces the `ffp` and `dfp` images (flat-field profile and dark field-profile, respectively). ASHLAR registers and stitches tiles and applies the illumination correction from BaSiC on the image to produce the whole image as a `.ome.tiff` file. The main goal was to be able to register the cycles, apply illumination correction if possible and be able to run the CycIF images with MCMICRO.
+
 
 ### ImageJ approach to pre-stitched images
 
@@ -59,6 +63,7 @@ Overlaid registered Cy3 channel from cycle 1 (blue) and cycle 2 (green):
 ### ASHLAR approach to pre-stitched images
 
 [ASHLAR](https://github.com/labsyspharm/ashlar) is the module used by MCMICRO to perform alignment and registration. For testing purposes, I used it outside of MCMICRO from its Docker container `labsyspharm/ashlar`. It could not register the whole images as they were, so I decided to preprocess the images with an [ImageJ macro](/Scripts/cropping_for_illumination.ijm) to convert them to pseudotiles which could then be used by ASHLAR with the `fileseries` function. ASHLAR requires overlaps for alignment and stitching so, as previously, the pseudotiles contained tiles. However, when applying ASHLAR on the whole preprocessed first 2-cycle image, I kept receiving the `ValueError: ('Contradictory paths found:', 'negative weights?')` error which I think happens due to the images containing lots of autofluorescing dirt which make it difficult for the registration to work properly. When using ASHLAR on certain parts of the image, it worked well, but it could not register the whole image. It should be pointed out that it could register some regions which the StackRegJ registration struggled with.
+
 
 #### Applying illumination correction with BaSiC and registration and stitching with ASHLAR on pre-stitched images
 
@@ -154,7 +159,7 @@ The registration is overall very good, some cells were washed away between cycle
 
 It was decided that we would work towards implementing Palom as a module within MCMICRO so the first step would be to make a Docker container with it. 
 The [DOCKERFILE](/Docker-container/Dockerfile) and the [environment.yml](/Docker-container/environment.yml) can both be found in the Docker container folder.
-The container was built and/or ran with the following commands:
+The container was built with, and can be run with the following commands, respectively:
 ```
 docker build -t palom:test .
 docker run -it palom:test /opt/conda/envs/palom/bin/python
@@ -165,6 +170,7 @@ Currently, to run the base-Palom functions, Python needs to be accessed from wit
 ### BFtools
 
 [BFtools](https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html) (Bio-Formats tools) are a useful group of tools for command line processing of bioformats images. The `bfconvert` tool was the most useful tool for my purposes as it allows for conversion between filetypes and cropping of selected regions. My plan was to use `bfconvert` to circumvent the need for ImageJ macros because it could be run from a command line interface and avoid opening images in Fiji for preprocessing, however since the ImageJ macro approach worked, there was no need, but if necessary, the approach will be looked into.
+
 
 ### Analysis of unstitched CycIF images
 
