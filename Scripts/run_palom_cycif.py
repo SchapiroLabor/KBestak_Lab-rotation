@@ -2,7 +2,7 @@ import numpy as np
 import palom
 
 
-def run_palom_no_color_prestitched(
+def run_palom_cycif(
     img_paths,
     pixel_size,
     channel_names,
