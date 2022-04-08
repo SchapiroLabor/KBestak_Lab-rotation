@@ -118,15 +118,18 @@ The uncorrected images were obtained through ASHLAR without the `--ffp` and `--d
 
 ### Palom approach to pre-stitched images
 
-
+[Palom](https://github.com/Yu-AnChen/palom) is an in-development tool for registering whole-slide images by one of the developers of ASHLAR. It is able to register large pre-stitched images such as the data I had to analyze. I added a function 
 
 Palom - works great, _CODE to get it working on the first image_
 -modified function so that it runs on multiple channels
 
-It would be great if I could have some comparison between the three approaches to registration.
 
-Even though it is a very basic concept, I've never encountered the PATH before so I learnt how to and why it might be useful to add certain tools to the PATH. For example, I installed bftools to be able to convert images from the command line so instead of running the command from its filepath each time, I added it to the PATH.
-Regarding BFTools, they can be downloaded from https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html. The bfconvert tool was the most useful tool for my purposes as it allows for conversion between filetypes and cropping of selected regions. My plan was to use bfconvert to circumvent my need for the ImageJ macro so that I could run every step from a coding interface and not bother with opening the images in Fiji for preprocessing. Bfconvert works in powershell, not cmd.
+### BFtools
+
+[BFtools](https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html) (Bio-Formats tools) are a useful group of tools for command line processing of bioformats images. The `bfconvert` tool was the most useful tool for my purposes as it allows for conversion between filetypes and cropping of selected regions. My plan was to use `bfconvert` to circumvent the need for ImageJ macros because it could be run from a command line interface and avoid opening images in Fiji for preprocessing, however since the ImageJ macro approach worked, there was no need, but if necessary, the approach will be looked into.
+
+
+It would be great if I could have some comparison between the three approaches to registration.
 
 Running MCMICRO on the registered images from Palom - good segmentation with Mesmer (example), but error in quantification - markers.csv not matching channels - I still need to look into it
 Trying to do QC in Python - array too bign error
