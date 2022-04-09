@@ -133,7 +133,7 @@ Running the following function in Python (with Palom installed, and the added [f
 ```
 import palom
 
-run_palom_no_color_prestitched(
+run_palom_cycif(
     img_paths = [
         "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/211208_IMT_m102119_02_20x_cycle1.tif", 
         "D:/Systems_Biology/Spatial_omics_lab_rotation/220204_CASSIS_Tumor_Exp001/Palom/3_cycle_image/211209_IMT_M102119_02_20X_cycle2.tif",
