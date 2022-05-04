@@ -229,7 +229,9 @@ After running Mesmer within MCMICRO for nuclear segmentation, the result was a s
 Image type and method to register:
 
 Pre-stitched images that require illumination correction: preprocess into pseudotiles necessary with this [ImageJ macro](/Scripts/cropping_for_illumination.ijm); apply BaSiC and ASHLAR as described [here](https://github.com/SchapiroLabor/KBestak_Lab-rotation#applying-illumination-correction-with-basic-and-registration-and-stitching-with-ashlar-on-pre-stitched-images).
+
 Large multi-cycle pre-stitched images without applying illumination correction: if the images are single-channel `.tif` files, apply [ImageJ macro](/Scripts/stack_from_single_channel_tif_files_basic.ijm) to create cycle-based stacks. Use Palom as described [here](https://github.com/SchapiroLabor/KBestak_Lab-rotation#using-palom-to-register-pre-stitched-images). This section will be updated as a command line interface gets implemented.
+
 Unstitched CycIF images: rename the individual tiles to fit a pattern such as `cycle_{ii}_channel_{jj}_tile_{kk}.tif` with the following [ImageJ macro](/Scripts/renaming_tiles_CycIF_tonsil.ijm). Apply BaSiC and ASHLAR as described [here](https://github.com/SchapiroLabor/KBestak_Lab-rotation#analysis-of-unstitched-cycif-images).
 
 The resulting `.ome.tiff` file can be run through MCMICRO starting at `probability-maps` to get single-cell quantification results.
